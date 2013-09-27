@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<bean id="theAction" class="com.springinaction.common.UpperAction">
+		<property name="message">
+			<value>${setName}</value>
+		</property>
+
+	</bean>
+	
+	<bean id="jdbcTest" class="com.springinaction.database.Test">
+	    <property name="jdbcTemplate" ref="jdbcTemplate" />
+	    <property name="namedParameterJdbcTemplate" ref="namedParameterJdbcTemplate" />
+	</bean>
+	
+
+	
+	<!-- properties文件读取 -->
+	<bean id="ResourceConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/config.properties</value>
+				<value>classpath:config/dev.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- dbcp  数据库JDBC的配置 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="${tbchannel.mysql.driver.class.name}" />
+        <property name="url" value="${tbchannel.mysql.url}" />
+        <property name="username" value="${tbchannel.mysql.username}" />
+        <property name="password" value="${tbchannel.mysql.password}" />
+        <!-- 保持测试环境和线上环境一致 -->
+        <property name="maxActive" value="20" />
+        <property name="initialSize" value="1" />
+        <property name="maxWait" value="6000" />
+        <property name="maxIdle" value="20" />
+        <property name="minIdle" value="0" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="180" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="180000" />
+    </bean>
+    
+
+	<!-- jdbcTemplate 数据源配置 
+	<bean id="dataSource" 
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${}"/>
+		<property name="url" value="${}"/>
+		<property name="username" value="${}"/>
+		<property name="password" value="${}"/>
+	</bean>
+	 -->
+	
+	<!-- jdbcTemplate配置 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+	    <property name="dataSource" ref="dataSource" />
+	</bean>
+	
+
+
+</beans>
