@@ -95,12 +95,5 @@ public class Test {
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
-	public static NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
-		return namedParameterJdbcTemplate;
-	}
 
-	public static void setNamedParameterJdbcTemplate(
-			NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-		Test.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-	}
 }

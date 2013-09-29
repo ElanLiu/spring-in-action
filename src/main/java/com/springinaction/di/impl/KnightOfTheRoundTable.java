@@ -46,13 +46,13 @@ public class KnightOfTheRoundTable implements Knight{
 
 	public static class inner{
 		public static void main(String[] args) throws Exception{
-			/*BeanFactory factory = new XmlBeanFactory(new FileSystemResource("src/main/resources/spring/di/knight.xml"));
+			BeanFactory factory = new XmlBeanFactory(new FileSystemResource("src/main/resources/spring/di/knight.xml"));
 			Knight knight = (Knight) factory.getBean("knightOfTheRoundTable");
-			knight.embarkOnQuest();*/
-			
-			ApplicationContext context = new ClassPathXmlApplicationContext("spring/di/knight.xml");
-			Knight knight = (Knight) context.getBean("knightOfTheRoundTable");
 			knight.embarkOnQuest();
+			
+			/*ApplicationContext context = new ClassPathXmlApplicationContext("spring/di/knight.xml");
+			Knight knight = (Knight) context.getBean("knightOfTheRoundTable");
+			knight.embarkOnQuest();*/
 			
 		}
 	}

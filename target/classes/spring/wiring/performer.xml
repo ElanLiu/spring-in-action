@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 命名空间 -->
+<!-- p命名空间，用于简化property -->
+<!-- context命名空间，用于使用注解 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    	http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd" >
+    
+    
+    <!-- 注解配置 -->
+    <!--<context:annotation-config />-->
+    
+    <!-- 扫描配置，也包含注解 -->
+    <context:component-scan 
+        base-package="com.springinaction.wiring">
+    </context:component-scan>
+        
+    
+    <!-- scope定义范围，默认singleton单例，即该bean只会初始化一个实例，prototype则每个请求一个实例 -->
+    <bean id="Duke" class="com.springinaction.wiring.impl.Juggler" scope="prototype">
+        <constructor-arg value="15" />
+    </bean>
+    
+    <bean id="tangPoem" class="com.springinaction.wiring.impl.TangPoem" />
+    
+    <!-- 使用init标示实例的初始化需要的准备，destroy标示实例销毁前的动作 -->
+    <!-- 也可以在beans中声明，作用于beans中所有的bean
+    	default-init-method="init"
+    	default-destroy-method="destroy" -->
+    <bean id="poeticDuke" class="com.springinaction.wiring.impl.PoeticJuggler" 
+        init-method="init" destroy-method="destroy">
+        <constructor-arg value="1" />
+        <constructor-arg ref="tangPoem" />
+        <constructor-arg ref="stage" />
+    </bean>
+    
+    <!-- factory-method标示当前单例模式下，可用的工厂方法，即可以生成实例的方法 -->
+	<bean id="stage" class="com.springinaction.wiring.Stage"  factory-method="getInstance"/>
+	
+	<!-- 通过在命名空间内引入p-schema，可以用该方式简化property的定义 -->
+	<bean id="tune" class="com.springinaction.wiring.common.Tune" 
+	    p:voice="dou~~" 
+	    p:justExample-ref="songSelector"/>
+	
+	<!-- 通过autowire自动装配，可以byName，byType，constructor，autodetect -->
+	<!-- 也可以通过修改命名空间，对整个beans生效：default-autowire="byType" -->
+	<bean id="saxophone" class="com.springinaction.wiring.impl.Saxophone" autowire="byName" />
+	
+	<bean id="instrumentalist" class="com.springinaction.wiring.impl.Instrumentalist">
+	    <property name="song" value="You'll be in my heart" />
+	    <property name="instrument" ref="saxophone" />
+	    <property name="instrumentList">
+	        <list>
+	            <ref bean="saxophone" />
+	            <ref bean="saxophone" />
+	        </list>
+	    </property>
+	    <!-- key, key-ref, value, value-ref -->
+	    <property name="instrumentMap">
+	        <map>
+	            <entry key="DOU" value-ref="saxophone" />
+	        </map>
+	    </property>
+	    <property name="audience">
+	        <props>
+	            <prop key="Lucy">Mather</prop>
+	        	<prop key="Alex">Father</prop>
+	        </props>
+	    </property>
+	</bean>
+	
+	<bean id="songSelector" class="com.springinaction.wiring.common.SongSelector">
+	    <property name="songList">
+	        <list>
+	            <value>吻别</value>
+	            <value>明天我要嫁给你了</value>
+	            <value>take me to your heart</value>
+	            <value>say you, say me</value>
+	        </list>
+	    </property>
+	</bean>
+	
+	<!-- SpEL spring expression language 
+	     1 使用beanId.属性 或者 beanId.方法，可以直接获取属性值或者调用方法
+	     2 ?.用来代替.，若song为空指针，则不会再调用后面的方法
+	     3 T() 运算符，调用类作用域的方法和常量
+	     4 可以进行各种运算-->
+	<bean id="instrumentalistSimulator" class="com.springinaction.wiring.impl.InstrumentalistSimulator">
+	    <property name="song" value="#{instrumentalist.song}" />
+	    <property name="anotherSong" value="#{songSelector.selectSong()?.toUpperCase()}" />
+	    <property name="pi" value="#{T(java.lang.Math).PI + 10*2^3 + 8/2 >100 ? ' 不是π' : ' 还不是pi'}" />
+	</bean>
+	
+	<!-- 使用注解注入依赖 : Autowired，同时使用了限制器-->
+	<bean id="piano" class="com.springinaction.wiring.impl.Piano" />
+	
+	
+	<!-- ======================AOP========================= -->
+	<!-- 注册该bean，成为切面 -->
+	<bean id="audience" class="com.springinaction.aop.Audience" />
+	
+	<aop:config>
+	    <aop:aspect ref="audience">
+	        <aop:before pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="takeSeats" />
+	        <aop:before pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="turnOffCellPhone" />
+	        <aop:after-returning pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="applaud" />
+	        <aop:after-throwing pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="demandRefund" />
+	    </aop:aspect>
+	</aop:config>
+	
+	<!-- 上面aop的简化版本，针对同一个pointcut -->
+	<aop:config>
+	    <aop:aspect ref="audience">
+	        <aop:pointcut id="performance" expression=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))" />
+	        <aop:before pointcut-ref="performance" method="takeSeats"/>
+	        <aop:before pointcut-ref="performance" method="turnOffCellPhone" />
+	        <aop:after-returning pointcut-ref="performance" method="applaud" />
+	        <aop:after-throwing pointcut-ref="performance" method="demandRefund" />
+	    </aop:aspect>
+	</aop:config>
+
+</beans>

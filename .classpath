@@ -71,4 +71,7 @@
       <attribute value="jar:file:/D:/repository/.m2/repo/commons-pool/commons-pool/1.5.4/commons-pool-1.5.4-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/aspectj/aspectjrt/1.7.3/aspectjrt-1.7.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/aspectj/aspectjweaver/1.7.3/aspectjweaver-1.7.3.jar"/>
 </classpath>
