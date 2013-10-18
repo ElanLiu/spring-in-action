@@ -106,24 +106,26 @@
 	<!-- ======================AOP========================= -->
 	<!-- 注册该bean，成为切面 -->
 	<bean id="audience" class="com.springinaction.aop.Audience" />
-	
+	<!-- 
 	<aop:config>
 	    <aop:aspect ref="audience">
 	        <aop:before pointcut=
-	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            "execution(* com.springinaction.wiring.service.Performer.perform(..))"
 	            method="takeSeats" />
 	        <aop:before pointcut=
-	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            "execution(* com.springinaction.wiring.service.Performer.perform(..))"
 	            method="turnOffCellPhone" />
 	        <aop:after-returning pointcut=
-	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            "execution(* com.springinaction.wiring.service.Performer.perform(..))"
 	            method="applaud" />
 	        <aop:after-throwing pointcut=
-	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            "execution(* com.springinaction.wiring.service.Performer.perform(..))"
 	            method="demandRefund" />
+	        <aop:around pointcut="execution(* com.springinaction.wiring.service.Performer.perform(..))"
+	            method="watchPerformance"/>
 	    </aop:aspect>
 	</aop:config>
-	
+	 -->
 	<!-- 上面aop的简化版本，针对同一个pointcut -->
 	<aop:config>
 	    <aop:aspect ref="audience">
@@ -133,6 +135,7 @@
 	        <aop:before pointcut-ref="performance" method="turnOffCellPhone" />
 	        <aop:after-returning pointcut-ref="performance" method="applaud" />
 	        <aop:after-throwing pointcut-ref="performance" method="demandRefund" />
+	        <aop:around pointcut-ref="performance" method="watchPerformance"/>
 	    </aop:aspect>
 	</aop:config>
 

@@ -12,8 +12,8 @@
 =================================================
 二、自动装配
 1 xml中使用autowire来自动装配，byName、byType等等
-2 @Autowired注解自动装配，@Qualifier限定器
+2 @Autowired注解自动装配，@Qualifier限定器.需要在xml中配置注解
 3 @Value中通过SpEL注入基本类型&String类型
-4 通过@Component注册bean
-5 通过@Configuration和@Bean自动检测并标注bean
+4 通过@Component注册bean。需要在xml中配置扫描
+5 通过@Configuration和@Bean自动检测并标注bean。需要在xml中配置扫描
 =================================================

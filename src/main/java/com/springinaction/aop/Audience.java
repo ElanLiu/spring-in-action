@@ -36,5 +36,10 @@ public class Audience {
 			System.out.println("///BOO! We want our money back!");
 		}
 	}
+	
+	public String repeatWords(String str){
+		System.out.println("repeat : " + str);
+		return str;
+	}
 
 }

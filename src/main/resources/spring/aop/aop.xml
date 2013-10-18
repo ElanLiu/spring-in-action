@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 命名空间 -->
+<!-- p命名空间，用于简化property -->
+<!-- context命名空间，用于使用注解 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    	http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd" >
+    
+    
+    <!-- 注解配置 -->
+    <!--<context:annotation-config />-->
+    
+    <!-- 扫描配置，也包含注解 -->
+    <context:component-scan 
+        base-package="com.springinaction.aop">
+    </context:component-scan>
+    
+    <aop:aspectj-autoproxy />
+    
+	<!-- ======================AOP========================= -->
+	<!-- 注册该bean，成为切面 -->
+	<bean id="audience" class="com.springinaction.aop.Audience" />
+
+	<!--
+	<aop:config>
+	    <aop:aspect ref="audience">
+	        <aop:before pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="takeSeats" />
+	        <aop:before pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="turnOffCellPhone" />
+	        <aop:after-returning pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="applaud" />
+	        <aop:after-throwing pointcut=
+	            "execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="demandRefund" />
+	        <aop:around pointcut="execution(* com.springinaction.wiring.impl.Juggler.perform(..))"
+	            method="watchPerformance"/>
+	    </aop:aspect>
+	</aop:config>-->
+	
+	<!-- 上面aop的简化版本，针对同一个pointcut -->
+	<aop:config>
+	    <aop:aspect ref="audience">
+	        <aop:pointcut id="performance" expression=
+	            "execution(* com.springinaction.aop.service.Performer.perform(..))" />
+	        <aop:pointcut id="say" expression=
+	            "execution(* com.springinaction.aop.service.Performer.sayWords(..))
+	            and args(str)" />
+	        <aop:before pointcut-ref="performance" method="takeSeats"/>
+	        <aop:before pointcut-ref="performance" method="turnOffCellPhone" />
+	        <aop:after-returning pointcut-ref="performance" method="applaud" />
+	        <aop:after-throwing pointcut-ref="performance" method="demandRefund" />
+	        <aop:around pointcut-ref="performance" method="watchPerformance"/>
+	        <aop:before pointcut-ref="say" method="repeatWords" arg-names="str"/>
+	    </aop:aspect>
+	</aop:config>
+	
+	<!-- 通过aop为performer引入新的接口contestant，获取新功能。但是显然，这里我不知道怎么用。。。配置保留 -->
+	<aop-declare-parents
+	    types-matching="com.springinaction.aop.service.Performer+"
+	    implement-interface="com.springinaction.aop.service.Contestant"
+	    delegate-ref="graciousContestant" />
+	
+	<aop:config>
+	    <aop:aspect ref="magician">
+	        <aop:pointcut id="thinking" 
+	            expression=
+	            "execution(* com.springinaction.aop.service.Thinker.thinkOfSomething(..)) 
+	            and args(thoughts)" />
+	        <aop:before pointcut-ref="thinking" method="interceptThoughts" arg-names="thoughts"/>
+	    </aop:aspect>
+	</aop:config>
+
+</beans>

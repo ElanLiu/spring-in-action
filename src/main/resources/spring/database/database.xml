@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<!-- properties文件读取 -->
+	<bean id="ResourceConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/config.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="jdbcTemplateDaoImpl" class="com.springinaction.database.impl.JdbcTemplateDaoImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+
+	<!-- spring数据源共有2种方式，dbcp和jdbc，建议dbcp方式 -->
+	<!-- dbcp 数据库JDBC的配置 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${mysql.driver.class.name}" />
+		<property name="url" value="${mysql.url}" />
+		<property name="username" value="${mysql.username}" />
+		<property name="password" value="${mysql.password}" />
+		<!-- 保持测试环境和线上环境一致 -->
+		<property name="maxActive" value="20" />
+		<property name="initialSize" value="1" />
+		<property name="maxWait" value="6000" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="0" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="180" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="180000" />
+	</bean>
+
+
+	<!-- jdbc 数据源配置 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName" value="${}"/> <property name="url" value="${}"/> 
+		<property name="username" value="${}"/> <property name="password" value="${}"/> 
+		</bean> -->
+
+	<!-- 共有3种jdbctemplate，推荐jdbctemplate -->
+	<!-- jdbcTemplate配置 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- NamedParameterJdbcTemplate配置 -->
+	<bean id="namedParameterJdbcTemplate"
+		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg>
+			<ref bean="dataSource" />
+		</constructor-arg>
+	</bean>
+
+	<!-- simpletemplate配置 -->
+	<bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<!-- mybatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:config/mybatis.xml" />
+        <property name="mapperLocations" value="classpath:config/mapper-test.xml" />
+	</bean>
+
+</beans>
